@@ -2,7 +2,7 @@ package data;
 
 public enum CityOfRussiaData {
     OMSK("Омск"),
-    MOSСOW ("Москва");
+    MOSСOW("Москва");
     private final String description;
 
     CityOfRussiaData(String description) {

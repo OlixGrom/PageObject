@@ -3,8 +3,9 @@ package pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-public class ProfilePage extends AbsBasePage{
-    private final static String PROFILE_URL = System.getProperty("profile.url","/lk/biography/personal/");
+public class ProfilePage extends AbsBasePage {
+    private final static String PROFILE_URL = System.getProperty("profile.url", "/lk/biography/personal/");
+
     public ProfilePage(WebDriver driver) {
         super(driver);
     }

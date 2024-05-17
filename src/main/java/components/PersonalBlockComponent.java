@@ -1,43 +1,55 @@
 package components;
 
-import data.*;
-import org.openqa.selenium.*;
+import data.CountryData;
+import data.GenderData;
+import data.LanguageLevelData;
+import data.WorkScheduleData;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PersonalBlockComponent extends AbsBaseComponent {
-    private final String fname = "input[name='fname']";
-    private final String fnameLatin = "input[name='fname_latin']";
-    private final String lname = "input[name='lname']";
-    private final String lnameLatin = "input[name='lname_latin']";
-    private final String blogName = "input[name='blog_name']";
-    private final String dateBirth = "input[name='date_of_birth']";
+    private static final String INPUT_TEMPLATE_NAME = "input[name='%s']";
     private final String phone = "input[class='input input_full'][placeholder='Телефон']";
-    private final String vkCText = "//input[@value='vk']/../../following-sibling::input";
-    private final String okCText = "//input[@value='ok']/../../following-sibling::input";
-    private final String buttonSave = "button[title='Сохранить и продолжить']";
-    //private final String buttonSelect = "button[class='lk-cv-block__action lk-cv-block__action_md-no-spacing js-formset-add js-lk-cv-custom-select-add']";
-    private final String buttonSelect = "button.js-lk-cv-custom-select-add";
-    private final String company = "input[id='id_company']";
-    private final String work = "input[id='id_work']";
-    private final String level = "//input[@name='english_level']/..";
+    private final String vkCTextLocator = "//input[@value='vk']/../../following-sibling::input";
+    private final String okCTextLocator = "//input[@value='ok']/../../following-sibling::input";
+    private final String buttonSaveSelector = "button[title='Сохранить и продолжить']";
+    private final String buttonSelectSelector = "button.js-lk-cv-custom-select-add";
+    private final String companySelector = "input[id='id_company']";
+    private final String workSelector = "input[id='id_work']";
+    private final String levelLocator = "//input[@name='english_level']/..";
 
     public PersonalBlockComponent(WebDriver driver) {
         super(driver);
     }
 
-    private static void scrollToElement(WebDriver webDriver, WebElement element) {
-        JavascriptExecutor js = (JavascriptExecutor) webDriver;
-        js.executeScript("arguments[0].scrollIntoView(true);", element);
+    private static String getLocator(String fieldName) {
+        return String.format(INPUT_TEMPLATE_NAME, fieldName);
     }
 
     private void enterText(WebElement webElement, String text) {
         webElement.clear();
         webElement.sendKeys(text);
+    }
+
+    public PersonalBlockComponent checkFieldValue(String fieldName, String value) {
+        String actual = getTextElementByValue((By.cssSelector(getLocator(fieldName))));
+        assertThat(actual)
+                .as(String.format("Error. The LName was expected %s, but the actual %s", actual, value))
+                .isEqualTo(value);
+        return this;
+    }
+
+    public PersonalBlockComponent setFieldValue(String fieldName, String value) {
+        enterText($(By.cssSelector(getLocator(fieldName))), value);
+        return this;
     }
 
     private String getTextElementByValue(By by) {
@@ -48,55 +60,19 @@ public class PersonalBlockComponent extends AbsBaseComponent {
         return $(by).getText();
     }
 
-    private boolean isElementExists(By by) {
-        boolean isExists = true;
-        try {
-            $(by);
-        } catch (NoSuchElementException e) {
-            isExists = false;
-        }
-        return isExists;
-    }
-
     public PersonalBlockComponent clickSave() {
-        $(By.cssSelector(buttonSave)).click();
-        return this;
-    }
-
-    public PersonalBlockComponent setFName(String fname) {
-        enterText($(By.cssSelector(this.fname)), fname);
-        return this;
-    }
-
-    public PersonalBlockComponent setFNameLatin(String fNameLatin) {
-        enterText($(By.cssSelector(this.fnameLatin)), fNameLatin);
-        return this;
-    }
-
-    public PersonalBlockComponent setLName(String lName) {
-        enterText($(By.cssSelector(this.lname)), lName);
-        return this;
-    }
-
-    public PersonalBlockComponent setLNameLatin(String lNameLatin) {
-        enterText($(By.cssSelector(this.lnameLatin)), lNameLatin);
-        return this;
-    }
-
-    public PersonalBlockComponent setBlogName(String blogName) {
-        enterText($(By.cssSelector(this.blogName)), blogName);
+        $(By.cssSelector(buttonSaveSelector)).click();
         return this;
     }
 
     public PersonalBlockComponent setCalendar(LocalDate dateBirth) {
-        //String[] listData = dateBirth.split("\\.");
-        $(By.cssSelector(this.dateBirth)).click();
+        $(By.cssSelector(getLocator("date_of_birth"))).click();
         $(By.cssSelector("div[data-view='days picker'] ul li[data-view='month current']")).click();
         $(By.cssSelector("div[data-view='months picker'] ul li[data-view='year current']")).click();
         boolean isFound = false;
 
         while (!isFound) {
-            if (isElementExists(By.xpath("//div[@data-view='years picker']//ul[@data-view='years']//li[text()='"+dateBirth.getYear()+"']"))) {
+            if (isElementExists(By.xpath("//div[@data-view='years picker']//ul[@data-view='years']//li[text()='" + dateBirth.getYear() + "']"))) {
                 isFound = true;
                 $(By.xpath("//div[@data-view='years picker']//ul[@data-view='years']//li[text()='" + dateBirth.getYear() + "']")).click();
             } else {
@@ -104,19 +80,20 @@ public class PersonalBlockComponent extends AbsBaseComponent {
             }
         }
 
-        String mounth = MonthData.getDescriptionBySymbol(Integer.toString(dateBirth.getMonthValue()));
+        String mounth = dateBirth.format(DateTimeFormatter.ofPattern("MMM", Locale.ENGLISH));
+//        String mounth = MonthData.getDescriptionBySymbol(Integer.toString(dateBirth.getMonthValue()));
         $(By.xpath("//div[@data-view='months picker']//ul[@data-view='months']//li[text()='" + mounth + "']")).click();
         $(By.xpath("//div[@data-view='days picker']//ul[@data-view='days']//li[text()='" + dateBirth.getDayOfMonth() + "']")).click();
         return this;
     }
 
     public PersonalBlockComponent setCompany(String companyName) {
-        enterText($(By.cssSelector(company)), companyName);
+        enterText($(By.cssSelector(companySelector)), companyName);
         return this;
     }
 
     public PersonalBlockComponent setWork(String workName) {
-        enterText($(By.cssSelector(work)), workName);
+        enterText($(By.cssSelector(workSelector)), workName);
         return this;
     }
 
@@ -145,8 +122,8 @@ public class PersonalBlockComponent extends AbsBaseComponent {
     public PersonalBlockComponent setLevellanguage(LanguageLevelData languageLevelData) throws InterruptedException {
         String listLevel = "//input[@name='english_level']/../../div[class='lk-cv-block__select-options js-custom-select-options-container']";
         if (!isElementExists(By.xpath(listLevel))) {
-            waiters.waitForElementToBeClickable(By.xpath(level));
-            $(By.xpath(level)).click();
+            waiters.waitForElementToBeClickable(By.xpath(levelLocator));
+            $(By.xpath(levelLocator)).click();
         }
 
         for (LanguageLevelData levelData : LanguageLevelData.values()) {
@@ -174,25 +151,25 @@ public class PersonalBlockComponent extends AbsBaseComponent {
     }
 
     public PersonalBlockComponent setContactOK(String okText) {
-        if (!isElementExists((By.xpath(this.okCText)))) {
-            $(By.cssSelector(buttonSelect)).click();
+        if (!isElementExists((By.xpath(this.okCTextLocator)))) {
+            $(By.cssSelector(buttonSelectSelector)).click();
             $(By.cssSelector("span[class='placeholder']")).click();
             $(By.xpath("//input[@value=''][@class='js-custom-select-input ']/../following-sibling::div/div/button[@title='OK']")).click();
-            enterText($(By.xpath(this.okCText)), okText);
+            enterText($(By.xpath(this.okCTextLocator)), okText);
         } else {
-            enterText($(By.xpath(this.okCText)), okText);
+            enterText($(By.xpath(this.okCTextLocator)), okText);
         }
         return this;
     }
 
     public PersonalBlockComponent setContactVK(String vkText) {
-        if (!isElementExists((By.xpath(this.vkCText)))) {
-            $(By.cssSelector(buttonSelect)).click();
+        if (!isElementExists((By.xpath(this.vkCTextLocator)))) {
+            $(By.cssSelector(buttonSelectSelector)).click();
             $(By.cssSelector("span[class='placeholder']")).click();
             $(By.xpath("//input[@value=''][@class='js-custom-select-input ']/../following-sibling::div/div/button[@title='VK']")).click();
-            enterText($(By.xpath(this.vkCText)), vkText);
+            enterText($(By.xpath(this.vkCTextLocator)), vkText);
         } else {
-            enterText($(By.xpath(this.vkCText)), vkText);
+            enterText($(By.xpath(this.vkCTextLocator)), vkText);
         }
         return this;
     }
@@ -270,48 +247,8 @@ public class PersonalBlockComponent extends AbsBaseComponent {
         return this;
     }
 
-    public PersonalBlockComponent checkLNameLatin(String lname_latin) {
-        String actual = getTextElementByValue((By.cssSelector(this.lnameLatin)));
-        assertThat(actual)
-                .as(String.format("Error. The LNameLatin was expected %s, but the actual %s", lname_latin, actual))
-                .isEqualTo(lname_latin);
-        return this;
-    }
-
-    public PersonalBlockComponent checkLName(String lname) {
-        String actual = getTextElementByValue((By.cssSelector(this.lname)));
-        assertThat(actual)
-                .as(String.format("Error. The LName was expected %s, but the actual %s", lname, actual))
-                .isEqualTo(lname);
-        return this;
-    }
-
-    public PersonalBlockComponent checkFName(String fname) {
-        String actual = getTextElementByValue((By.cssSelector(this.fname)));
-        assertThat(actual)
-                .as(String.format("Error. The FName was expected %s, but the actual %s", fname, actual))
-                .isEqualTo(fname);
-        return this;
-    }
-
-    public PersonalBlockComponent checkFNameLatin(String fname_latin) {
-        String actual = getTextElementByValue((By.cssSelector(this.fnameLatin)));
-        assertThat(actual)
-                .as(String.format("Error. The FNameLatin was expected %s, but the actual %s", fname_latin, actual))
-                .isEqualTo(fname_latin);
-        return this;
-    }
-
-    public PersonalBlockComponent checkBlockName(String blogName) {
-        String actual = getTextElementByValue((By.cssSelector(this.blogName)));
-        assertThat(actual)
-                .as(String.format("Error. The BlockName was expected %s, but the actual %s", blogName, actual))
-                .isEqualTo(blogName);
-        return this;
-    }
-
     public PersonalBlockComponent checkCompany(String company) {
-        String actual = getTextElementByValue((By.cssSelector(this.company)));
+        String actual = getTextElementByValue((By.cssSelector(this.companySelector)));
         assertThat(actual)
                 .as(String.format("Error. The Company was expected %s, but the actual %s", company, actual))
                 .isEqualTo(company);
@@ -319,7 +256,7 @@ public class PersonalBlockComponent extends AbsBaseComponent {
     }
 
     public PersonalBlockComponent checkWork(String work) {
-        String actual = getTextElementByValue((By.cssSelector(this.work)));
+        String actual = getTextElementByValue((By.cssSelector(this.workSelector)));
         assertThat(actual)
                 .as(String.format("Error. The Work was expected %s, but the actual %s", work, actual))
                 .isEqualTo(work);
@@ -327,7 +264,7 @@ public class PersonalBlockComponent extends AbsBaseComponent {
     }
 
     public PersonalBlockComponent checkOk(String okText) {
-        String actual = isElementExists(By.xpath(this.okCText)) ? getTextElementByValue((By.xpath(this.okCText))) : "";
+        String actual = isElementExists(By.xpath(this.okCTextLocator)) ? getTextElementByValue((By.xpath(this.okCTextLocator))) : "";
         assertThat(actual)
                 .as(String.format("Error. The Oktext was expected %s, but the actual %s", okText, actual))
                 .isEqualTo(okText);
@@ -335,7 +272,7 @@ public class PersonalBlockComponent extends AbsBaseComponent {
     }
 
     public PersonalBlockComponent checkVk(String VkText) {
-        String actual = isElementExists(By.xpath(this.vkCText)) ? getTextElementByValue((By.xpath(this.vkCText))) : "";
+        String actual = isElementExists(By.xpath(this.vkCTextLocator)) ? getTextElementByValue((By.xpath(this.vkCTextLocator))) : "";
         assertThat(actual)
                 .as(String.format("Error. The Vktext was expected %s, but the actual %s", VkText, actual))
                 .isEqualTo(VkText);

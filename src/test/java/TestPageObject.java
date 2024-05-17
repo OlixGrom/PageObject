@@ -1,10 +1,11 @@
+import com.github.javafaker.Faker;
 import components.AuthModalComponent;
 import components.MainMenuComponent;
 import components.PersonalBlockComponent;
 import data.*;
+import driver.OptionsBrowser;
 import driver.WebDriverFactory;
 import exceptions.DriverNotSupportedException;
-import helpers.OptionsBrowser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
@@ -14,7 +15,11 @@ import org.openqa.selenium.WebDriver;
 import pages.MainPage;
 import pages.ProfilePage;
 
+import java.net.MalformedURLException;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.Locale;
 
 public class TestPageObject {
     private final static Logger logger = LogManager.getLogger(TestPageObject.class);
@@ -23,23 +28,28 @@ public class TestPageObject {
     private final String lname = "Фамилия";
     private final String lname_latin = "LastName";
     private final String blog_name = "BlogName";
-    //private final String dateBirth = "25.10.1986";
-    LocalDate dateBirth = LocalDate.of(1986, 10, 25);
     private final String vkText = "vkText";
     private final String okText = "okText";
     private final String companyName = "Company";
     private final String workName = "QA engineer";
     private final String country = "Россия";
     private final String city = "Омск";
-
+    private final LocalDate dateBirth = LocalDate.of(1986, 10, 25);
+    private final String browserType = System.getProperty("browser", "remote").toUpperCase();
+    protected Faker fakerEnglish, fakerRussian;
     private WebDriver driver;
-    private final String browserType = System.getProperty("browser", "chrome").toUpperCase();
+
+    public static LocalDate convertToLocalDate(Date date) {
+        return date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+    }
 
     @BeforeEach
-    public void init() throws DriverNotSupportedException {
+    public void init() throws DriverNotSupportedException, MalformedURLException {
+        System.out.println("! browserType " + browserType);
         this.driver = new WebDriverFactory().create(this.browserType, new OptionsBrowser(this.browserType).getOptions());
         this.driver.manage().window().maximize();
-        //this.driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
     }
 
     @AfterEach
@@ -50,14 +60,29 @@ public class TestPageObject {
         }
     }
 
-
     @Test
-    void checkProfile() throws DriverNotSupportedException, InterruptedException {
+    void checkProfile() throws DriverNotSupportedException, InterruptedException, MalformedURLException {
+        fakerRussian = new Faker(Locale.forLanguageTag("ru"));
+        fakerEnglish = new Faker(Locale.forLanguageTag("en"));
+        String fname = fakerRussian.name().firstName();
+        String fname_latin = fakerEnglish.name().firstName();
+        String lname = fakerRussian.name().lastName();
+        String lname_latin = fakerEnglish.name().lastName();
+        String blog_name = fakerEnglish.funnyName().name();
+        String vkText = "vkText";
+        String okText = "okText";
+        String companyName = fakerRussian.company().name();
+        String workName = fakerRussian.job().title();
+        String country = "Россия";
+        String city = "Омск";
+        LocalDate dateBirth = convertToLocalDate(fakerRussian.date().birthday(20, 30));
+
         //Открыть https://otus.ru
         new MainPage(driver).open("/");
 
         //Авторизоваться на сайте
-        new MainMenuComponent(driver).clickEnter();
+        new MainMenuComponent(driver)
+                .clickEnter();
 
         new AuthModalComponent(driver)
                 .clickEmail()
@@ -71,13 +96,12 @@ public class TestPageObject {
 
         //В разделе "О себе" заполнить все поля "Личные данные" и добавить не менее двух контактов
         //Нажать сохранить
-
         new PersonalBlockComponent(driver)
-                .setFName(fname)
-                .setFNameLatin(fname_latin)
-                .setLName(lname)
-                .setLNameLatin(lname_latin)
-                .setBlogName(blog_name)
+                .setFieldValue("fname", fname)
+                .setFieldValue("fname_latin", fname_latin)
+                .setFieldValue("lname", lname)
+                .setFieldValue("lname_latin", lname_latin)
+                .setFieldValue("blog_name", blog_name)
                 .setCalendar(dateBirth)
                 .setCountry(CountryData.RUSSIA)
                 .setCity(CityOfRussiaData.OMSK.getDescription())
@@ -110,15 +134,15 @@ public class TestPageObject {
                 .setPassword()
                 .clickEnter();
 
-        //Войти в личный кабинет
+        //Войти в личный кабинет - персональные данные
         new ProfilePage(driver).openProfile();
 
         new PersonalBlockComponent(driver)
-                .checkLName(lname)
-                .checkLNameLatin(lname_latin)
-                .checkFName(fname)
-                .checkFNameLatin(fname_latin)
-                .checkBlockName(blog_name)
+                .checkFieldValue("lname", lname)
+                .checkFieldValue("lname_latin", lname_latin)
+                .checkFieldValue("fname", fname)
+                .checkFieldValue("fname_latin", fname_latin)
+                .checkFieldValue("blog_name", blog_name)
                 .checkCalendar(dateBirth)
                 .checkCountry(country)
                 .checkCity(city)

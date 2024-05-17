@@ -2,7 +2,7 @@ package data;
 
 public enum CountryData {
     RUSSIA("Россия"),
-    BELARUS ("Республика Беларусь");
+    BELARUS("Республика Беларусь");
     private final String description;
 
     CountryData(String description) {

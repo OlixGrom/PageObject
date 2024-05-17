@@ -15,27 +15,31 @@ public enum MonthData {
     DEC("Dec", "12");
     private final String description;
     private final String symbol;
-    public String getSymbol() {
-        return symbol;
+
+    MonthData(String description, String symbol) {
+        this.description = description;
+        this.symbol = symbol;
     }
-    public String getDescription() {
-        return description;
-    }
-    public static String getDescriptionBySymbol(String symbol){
+
+    public static String getDescriptionBySymbol(String symbol) {
         MonthData[] values = MonthData.values();
         String enumValue = null;
-        for(MonthData eachValue : values) {
+        for (MonthData eachValue : values) {
             enumValue = eachValue.getSymbol();
 
             if (enumValue.equalsIgnoreCase(symbol)) {
                 return eachValue.getDescription();
             }
         }
-      return enumValue;
+        return enumValue;
     }
-    MonthData(String description, String symbol) {
-        this.description = description;
-        this.symbol = symbol;
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
 }

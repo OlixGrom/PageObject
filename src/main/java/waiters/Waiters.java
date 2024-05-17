@@ -10,8 +10,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 
 public class Waiters {
-    private WebDriver driver;
-    private int waiterTimeOut = Integer.parseInt(System.getProperty("waiter.timeout", "5"));
+    private final WebDriver driver;
+    private final int waiterTimeOut = Integer.parseInt(System.getProperty("waiter.timeout", "5"));
 
     public Waiters(WebDriver driver) {
         this.driver = driver;
@@ -25,6 +25,7 @@ public class Waiters {
             return false;
         }
     }
+
     public boolean waitForElementVisible(By locator) {
         return waitForCondition(ExpectedConditions.visibilityOfElementLocated(locator));
     }

@@ -1,4 +1,4 @@
-package helpers;
+package driver;
 
 import data.BrowserTypeData;
 import org.openqa.selenium.MutableCapabilities;
@@ -9,9 +9,9 @@ import java.util.Locale;
 
 public class OptionsBrowser {
 
-    private MutableCapabilities capabilities;
+    private final MutableCapabilities capabilities;
 
-    public OptionsBrowser(String browserType){
+    public OptionsBrowser(String browserType) {
         switch (BrowserTypeData.valueOf(browserType.toUpperCase(Locale.ROOT))) {
             case CHROME: {
                 this.capabilities = getChromeOptions();
@@ -27,11 +27,11 @@ public class OptionsBrowser {
         }
     }
 
-    public MutableCapabilities getOptions(){
+    public MutableCapabilities getOptions() {
         return this.capabilities;
     }
 
-    private MutableCapabilities getChromeOptions(){
+    private MutableCapabilities getChromeOptions() {
         MutableCapabilities capabilities = new MutableCapabilities();
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.addArguments("--start-maximized");
@@ -43,7 +43,7 @@ public class OptionsBrowser {
         return capabilities;
     }
 
-    private MutableCapabilities getFirefoxOptions(){
+    private MutableCapabilities getFirefoxOptions() {
         MutableCapabilities capabilities = new MutableCapabilities();
         FirefoxOptions firefoxOptions = new FirefoxOptions();
         firefoxOptions.addArguments("--start-maximized");
@@ -54,4 +54,5 @@ public class OptionsBrowser {
         capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, firefoxOptions);
         return capabilities;
     }
+
 }

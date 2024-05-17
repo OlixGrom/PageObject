@@ -3,14 +3,14 @@ package components;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-public class MainMenuComponent extends AbsBaseComponent{
+public class MainMenuComponent extends AbsBaseComponent {
+    private final String buttonEnterLocator = "//button[text()='Войти']";
+
     public MainMenuComponent(WebDriver driver) {
         super(driver);
     }
 
-    private String buttonEnter = "//button[text()='Войти']";
-
-    public void clickEnter(){
-        driver.findElement(By.xpath(buttonEnter)).click();
+    public void clickEnter() {
+        $(By.xpath(buttonEnterLocator)).click();
     }
 }

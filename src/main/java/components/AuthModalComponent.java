@@ -7,44 +7,42 @@ import org.openqa.selenium.WebDriver;
 
 public class AuthModalComponent extends AbsBaseComponent {
     private final static Logger logger = LogManager.getLogger(AuthModalComponent.class);
+    private final String prefixLocator = "//div[.";
+    private final String emailLocator = "/input[@name='email']";
+    private final String passwordLocator = "/input[@type='password']";
+    private final String buttonEnterLocator = "//button[./*[text()='Войти']]";
 
     public AuthModalComponent(WebDriver driver) {
         super(driver);
     }
 
-    private final String prefix = "//div[.";
-    private final String email = "/input[@name='email']";
-    private final String password = "/input[@type='password']";
-
-    private final String buttonEnter = "//button[./*[text()='Войти']]";
-
     public AuthModalComponent clickEmail() {
-        logger.info("Click in email");
-        $(By.xpath(prefix + email + "]")).click();
+        logger.info("Click in email ");
+        $(By.xpath(prefixLocator + emailLocator + "]")).click();
         return this;
     }
 
     public AuthModalComponent clickPassword() {
         logger.info("Click in password");
-        $(By.xpath(prefix + password + "]")).click();
+        $(By.xpath(prefixLocator + passwordLocator + "]")).click();
         return this;
     }
 
     public AuthModalComponent setEmail() {
         logger.info("Enter data: email");
-        $(By.xpath("/" + email)).sendKeys(System.getProperty("email"));
+        $(By.xpath("/" + emailLocator)).sendKeys(System.getProperty("email", "TestOlix@yandex.ru"));
         return this;
     }
 
     public AuthModalComponent setPassword() {
         logger.info("Enter data: password");
-        $(By.xpath("/" + password)).sendKeys(System.getProperty("pass"));
+        $(By.xpath("/" + passwordLocator)).sendKeys(System.getProperty("pass", "pHjLd?PO1"));
         return this;
     }
 
     public AuthModalComponent clickEnter() {
         logger.info("Click in button enter");
-        $(By.xpath(buttonEnter)).click();
+        $(By.xpath(buttonEnterLocator)).click();
         return this;
     }
 }

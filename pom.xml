@@ -8,6 +8,26 @@
     <artifactId>PageObject</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <log.version>2.20.0</log.version>
+        <junit.version>5.10.2</junit.version>
+        <junit.param.version>5.10.0</junit.param.version>
+        <selenium.java>4.19.1</selenium.java>
+        <webdrivermanager>5.7.0</webdrivermanager>
+        <selenium.api>4.19.1</selenium.api>
+        <selenium.support>4.19.1</selenium.support>
+        <maven.surefire>3.2.5</maven.surefire>
+        <maven.compiler>3.12.1</maven.compiler>
+        <maven.resources>3.3.1</maven.resources>
+        <assertj.version>3.25.3</assertj.version>
+        <browser>chrome</browser>
+        <base.url>https://otus.ru</base.url>
+        <versionFacker>1.0.2</versionFacker>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.assertj</groupId>
@@ -41,14 +61,12 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>${selenium.java}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
@@ -73,32 +91,17 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>${versionFacker}</version>
+        </dependency>
+        <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-support</artifactId>
-            <version>4.18.1</version>
+            <version>${selenium.support}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
-
-    <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <log.version>2.20.0</log.version>
-        <junit.version>5.10.2</junit.version>
-        <junit.param.version>5.10.0</junit.param.version>
-        <selenium.java>4.19.1</selenium.java>
-<!--        <selenium.java>3.14.0</selenium.java>-->
-        <webdrivermanager>5.7.0</webdrivermanager>
-        <selenium.api>4.19.1</selenium.api>
-        <selenium.support>4.19.1</selenium.support>
-        <maven.surefire>3.2.5</maven.surefire>
-        <maven.compiler>3.12.1</maven.compiler>
-        <maven.resources>3.3.1</maven.resources>
-        <assertj.version>3.25.3</assertj.version>
-        <browser>chrome</browser>
-        <base.url>https://otus.ru</base.url>
-    </properties>
 
     <build>
         <plugins>
