@@ -30,13 +30,13 @@ public class AuthModalComponent extends AbsBaseComponent {
 
     public AuthModalComponent setEmail() {
         logger.info("Enter data: email");
-        $(By.xpath("/" + emailLocator)).sendKeys(System.getProperty("email", "TestOlix@yandex.ru"));
+        $(By.xpath("/" + emailLocator)).sendKeys(System.getProperty("email"));
         return this;
     }
 
     public AuthModalComponent setPassword() {
         logger.info("Enter data: password");
-        $(By.xpath("/" + passwordLocator)).sendKeys(System.getProperty("pass", "pHjLd?PO1"));
+        $(By.xpath("/" + passwordLocator)).sendKeys(System.getProperty("pass"));
         return this;
     }
 
