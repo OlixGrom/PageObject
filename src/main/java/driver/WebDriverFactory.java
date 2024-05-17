@@ -45,8 +45,9 @@ public class WebDriverFactory {
                 chromeOptions.setCapability(CapabilityType.BROWSER_VERSION, "124.0");
                 Map<String, Object> selenoidOptions = new HashMap<>();
                 selenoidOptions.put("enableVNC", true);
+                selenoidOptions.put("sessionTimeout", "15m");
                 chromeOptions.setCapability("selenoid:options", selenoidOptions);
-                return new RemoteWebDriver(new URL(remoteGridURL), capabilities);
+                return new RemoteWebDriver(new URL(remoteGridURL), chromeOptions);
             }
             default:
                 throw new DriverNotSupportedException(webDriverName);
